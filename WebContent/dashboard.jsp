@@ -9,18 +9,18 @@
 </head>
 <body>
 <h1>Dashboard</h1>
-<h2>Welcome <s:property value="userid"/></h2>
+<h2>Welcome <s:property value="rolename"/> <s:property value="userid"/></h2>
+<s:iterator value="rights">
+			
+			<a href='<s:property value="screenname"/>'><s:property value="rightname"/></a><br>
+</s:iterator>
 <s:form name="showsemesterbranch" action="showsemesterbranch">
  <s:submit value="Fetch Records"/>
 </s:form>
 
-<a href="showsemesterbranch.action">subject</a>
-<a href="showright.action">role</a>
 <a href="showbranchsemester.action">register student</a>
 <a href="showbranchsemestersubject.action">register teacher</a>
 <a href="showgroupstudent.action">group</a>
 <a href="pretestcache.action">add test</a>
-<a href="semester.jsp">semester</a>
-<a href="branch.jsp">branch</a>
 </body>
 </html>
