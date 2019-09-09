@@ -115,32 +115,32 @@ public interface ClassmarkerDAO {
 			}
 		}
 	
-	public static boolean login(String userid, String password) throws ClassNotFoundException, SQLException, NamingException {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-//		String msg ="Invalid Userid or Password";
-		con = CommonDAO.getConnection();
-		pstmt = con.prepareStatement("select userid,password from user_mst where userid=? and password=?");
-//		pstmt = con.prepareStatement("select userid, password "
-//				+ "from user_mst where userid=? and password=?");
-		pstmt.setString(1, userid);
-		pstmt.setString(2, password);
-		rs = pstmt.executeQuery();
-		System.out.println(pstmt);
-		System.out.println(rs);
-		if(rs.next()){
-			 return true;
-		 }
-//		if(rs.next()) {
-////			msg = "Welcome "+userid;
-//			System.out.println("Login successful");
-//			return true;
-//		}
+//	public static boolean login(String userid, String password) throws ClassNotFoundException, SQLException, NamingException {
+//		Connection con = null;
+//		PreparedStatement pstmt = null;
+//		ResultSet rs = null;
+////		String msg ="Invalid Userid or Password";
+//		con = CommonDAO.getConnection();
+//		pstmt = con.prepareStatement("select userid,password from user_mst where userid=? and password=?");
+////		pstmt = con.prepareStatement("select userid, password "
+////				+ "from user_mst where userid=? and password=?");
+//		pstmt.setString(1, userid);
+//		pstmt.setString(2, password);
+//		rs = pstmt.executeQuery();
+//		System.out.println(pstmt);
+//		System.out.println(rs);
+//		if(rs.next()){
+//			 return true;
+//		 }
+////		if(rs.next()) {
+//////			msg = "Welcome "+userid;
+////			System.out.println("Login successful");
+////			return true;
+////		}
+////		 return false;
+////		 return userDTO;
 //		 return false;
-//		 return userDTO;
-		 return false;
-	}
+//	}
 	
 	public static boolean addsub(String subjectcode,int subjectid,String subjectname,String subjectdesc,String selectedbranch,String selectedsemester) throws SQLException, ClassNotFoundException {
 		Connection con = null;
