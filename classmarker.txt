@@ -1,0 +1,113 @@
+create database classmarker;
+
+use classmarker;
+
+create table app_startup(user_time varchar(50) UNIQUE NOT NULL,status char(1) default 'Y');
+
+insert into app_startup (user_time) values("First Time");
+
+create table user_mst(uid integer AUTO_INCREMENT,userenrollment varchar(20) UNIQUE NOT NULL,userid varchar(50) UNIQUE NOT NULL,contact varchar(20),email varchar(50) unique not null,password varchar(50) not null,status char(1) default 'Y', primary key(uid));
+
+insert into user_mst(userid,email,password) values("admin","admin@gmail.com","admin");
+
+create table subject_mst(sid integer AUTO_INCREMENT,subjectcode varchar(50) UNIQUE NOT NULL,subjectid int unique not null,subjectname varchar(50) unique not null,subjectdesc varchar(100) not null,status char(1) default 'Y', primary key(sid));
+
+create table semester_mst(semid integer AUTO_INCREMENT,semestername varchar(50) unique not null,semesterdesc varchar(100) not null,status char(1) default 'Y', primary key(semid));
+
+create table branch_mst(branchid integer AUTO_INCREMENT,branchname varchar(50) unique not null,branchdesc varchar(100) not null,status char(1) default 'Y', primary key(branchid));
+
+CREATE TABLE SUBJECT_BRANCH_SEMESTER_MAPPING (MAPID integer AUTO_INCREMENT, SUBJECTID INTEGER REFERENCES subject_mst(sid) ON DELETE CASCADE,branchid INTEGER REFERENCES branch_mst(branchid) ON DELETE CASCADE ,semesterid INTEGER REFERENCES semester_mst(semid) ON DELETE CASCADE ,STATUS CHAR(1) DEFAULT 'Y',primary key(MAPID));
+
+select subject_mst.subjectcode, subject_mst.subjectid, subject_mst.subjectname, subject_mst.subjectdesc, branch_mst.branchname, semester_mst.semestername from subject_mst, branch_mst, semester_mst, subject_branch_semester_mapping where subject_mst.sid=subject_branch_semester_mapping.subjectid and branch_mst.branchid=subject_branch_semester_mapping.branchid and semester_mst.semid=subject_branch_semester_mapping.semesterid;
+
+create table role_mst(roleid integer AUTO_INCREMENT,rolename varchar(50) UNIQUE NOT NULL,roledesc varchar(100) not null,status char(1) default 'Y', primary key(roleid));
+
+insert into role_mst(rolename,roledesc) values("admin","Admin has all the rights");
+
+insert into role_mst(rolename,roledesc) values("student","Student has some of the rights");
+
+CREATE TABLE USER_ROLE_MAPPING (MAPID integer AUTO_INCREMENT, USERID INTEGER REFERENCES user_mst(uid) ON DELETE CASCADE,ROLEID INTEGER REFERENCES role_mst(roleid) ON DELETE CASCADE ,STATUS CHAR(1) DEFAULT 'Y',primary key(MAPID) );
+
+INSERT INTO USER_ROLE_MAPPING (USERID,ROLEID) VALUES(1,1);
+
+create table right_mst(rightid integer AUTO_INCREMENT,rightname varchar(50) UNIQUE NOT NULL,description varchar(100) not null,link varchar(50) unique not null, primary key(rightid));
+
+insert into right_mst(rightname,description,link) values("Role","roles","showright.action");
+
+insert into right_mst(rightname,description,link) values("Subject","subjects","showsemesterbranch.action");
+
+insert into right_mst(rightname,description,link) values("Semester","semesters","semester.jsp");
+
+insert into right_mst(rightname,description,link) values("Branch","branches","branch.jsp");
+
+insert into right_mst(rightname,description,link) values("Group","group","showgroupstudent.action");
+
+insert into right_mst(rightname,description,link) values("Add Test","add test","showbranchsemsubjectgroup.action");
+
+CREATE TABLE ROLE_RIGHT_MAPPING (MAPID integer AUTO_INCREMENT, ROLEID INTEGER REFERENCES ROLE_MST(ROLEID) ON DELETE CASCADE,RIGHTID INTEGER REFERENCES RIGHT_MST(RIGHTID) ON DELETE CASCADE ,STATUS CHAR(1) DEFAULT 'Y',primary key(MAPID));
+
+INSERT INTO ROLE_RIGHT_MAPPING (ROLEID,RIGHTID) VALUES(1,1);
+
+INSERT INTO ROLE_RIGHT_MAPPING (ROLEID,RIGHTID) VALUES(1,2);
+
+INSERT INTO ROLE_RIGHT_MAPPING (ROLEID,RIGHTID) VALUES(1,3);
+
+INSERT INTO ROLE_RIGHT_MAPPING (ROLEID,RIGHTID) VALUES(1,4);
+
+INSERT INTO ROLE_RIGHT_MAPPING (ROLEID,RIGHTID) VALUES(2,5);
+
+INSERT INTO ROLE_RIGHT_MAPPING (ROLEID,RIGHTID) VALUES(2,6);
+
+create table user_branch_semester_mapping(mapid integer AUTO_INCREMENT,userid integer unique not null references user_mst(uid) on delete cascade, branchid integer references branch_mst(branchid) on delete cascade, semesterid INTEGER REFERENCES semester_mst(semid) ON DELETE CASCADE ,STATUS CHAR(1) DEFAULT 'Y',primary key(MAPID));
+
+select user_mst.userenrollment,user_mst.userid, user_mst.contact, user_mst.email, branch_mst.branchname, semester_mst.semestername, subject_mst.subjectname from user_mst, branch_mst,semester_mst,user_branch_semester_mapping, role_mst, user_role_mapping, subject_branch_semester_mapping, subject_mst where user_mst.uid=user_role_mapping.userid and role_mst.roleid=user_role_mapping.roleid and subject_mst.sid=subject_branch_semester_mapping.subjectid and user_branch_semester_mapping.branchid=branch_mst.branchid and user_branch_semester_mapping.semesterid=semester_mst.semid and role_mst.rolename="student";
+
+create table userteacher_branch_semester_subject_mapping(mapid integer AUTO_INCREMENT,userid integer not null references user_mst(uid) on delete cascade, branchid integer references branch_mst(branchid) on delete cascade, semesterid INTEGER REFERENCES semester_mst(semid) ON DELETE CASCADE, subjectid INTEGER REFERENCES subject_mst(sid) ON DELETE CASCADE ,STATUS CHAR(1) DEFAULT 'Y',primary key(MAPID));
+
+create table group_mst(groupid integer AUTO_INCREMENT,groupname varchar(50) UNIQUE NOT NULL,groupdesc varchar(100) not null,primary key(groupid));
+
+create table group_student_mapping(mapid integer AUTO_INCREMENT,groupid integer not null references group_mst(groupid) on delete cascade, studentid integer references user_mst(uid) on delete cascade,STATUS CHAR(1) DEFAULT 'Y',primary key(MAPID));
+
+create table question_mst(questionid integer AUTO_INCREMENT,questionname varchar(200) NOT NULL,choice1 varchar(100) not null,choice2 varchar(100) not null,choice3 varchar(100) not null,choice4 varchar(100) not null,correctchoice varchar(100) not null, primary key(questionid));
+
+create table test_mst(testid integer AUTO_INCREMENT,testname varchar(200) UNIQUE NOT NULL,marksperquestion varchar(20) not null,STATUS CHAR(1) DEFAULT 'Y',primary key(testid));
+
+create table test_question_mapping(mapid integer AUTO_INCREMENT,testid integer not null references test_mst(testid) on delete cascade,questionid integer not null references question_mst(questionid) on delete cascade,STATUS CHAR(1) DEFAULT 'Y',primary key(MAPID));
+
+create table test_branch_semester_subject_group_mapping(mapid integer AUTO_INCREMENT,testid integer not null references test_mst(testid) on delete cascade, branchid integer references branch_mst(branchid) on delete cascade, semesterid INTEGER REFERENCES semester_mst(semid) ON DELETE CASCADE, subjectid INTEGER REFERENCES subject_mst(sid) ON DELETE CASCADE,groupid integer not null references group_mst(groupid) on delete cascade,STATUS CHAR(1) DEFAULT 'Y',primary key(MAPID));
+
+create table userteacher_test_mapping(mapid integer AUTO_INCREMENT,teacherid integer not null references user_mst(uid) on delete cascade,testid integer not null references test_mst(testid) on delete cascade,STATUS CHAR(1) DEFAULT 'Y',primary key(MAPID));
+
+select user_mst.userid from user_mst,role_mst,user_role_mapping where user_mst.uid=user_role_mapping.userid and role_mst.roleid=user_role_mapping.roleid and role_mst.rolename="student";
+
+select group_mst.groupname,group_mst.groupdesc,user_mst.userid from group_mst,user_mst,group_student_mapping where group_mst.groupid=group_student_mapping.groupid and user_mst.uid=group_student_mapping.studentid;
+
+create table group_teacher_mapping(mapid integer AUTO_INCREMENT,groupid integer NOT NULL REFERENCES group_mst(groupid) ON DELETE CASCADE,teacherid integer NOT NULL REFERENCES user_mst(uid) ON DELETE CASCADE, status char(1) DEFAULT 'Y',primary key(mapid));
+
+create table question_subject_mapping(mapid integer AUTO_INCREMENT,questionid integer NOT NULL REFERENCES question_mst(questionid) ON DELETE CASCADE,subjectid integer NOT NULL REFERENCES subject_mst(sid) ON DELETE CASCADE,status char(1) DEFAULT 'Y',primary key(mapid));
+
+select question_mst.questionname,question_mst.choice1,question_mst.choice2,question_mst.choice3,question_mst.choice4,question_mst.correctchoice,subject_mst.subjectname from question_mst,subject_mst,question_subject_mapping,userteacher_branch_semester_subject_mapping where question_mst.questionid=question_subject_mapping.questionid and subject_mst.sid=question_subject_mapping.subjectid and subject_mst.sid=userteacher_branch_semester_subject_mapping.subjectid and  userteacher_branch_semester_subject_mapping.userid=1;
+
+select test_mst.testname,test_mst.marksperquestion,branch_mst.branchname,group_mst.groupname,semester_mst.semestername, subject_mst.subjectname, user_mst.userid from test_mst,branch_mst,group_mst,subject_mst,semester_mst,userteacher_branch_semester_subject_mapping,test_branch_semester_subject_group_mapping,user_mst where test_branch_semester_subject_group_mapping.testid=test_mst.testid and user_mst.uid=userteacher_branch_semester_subject_mapping.userid and 
+test_branch_semester_subject_group_mapping.branchid=branch_mst.branchid and test_branch_semester_subject_group_mapping.semesterid=semester_mst.semid and test_branch_semester_subject_group_mapping.subjectid=subject_mst.sid and test_branch_semester_subject_group_mapping.groupid=group_mst.groupid and  test_branch_semester_subject_group_mapping.subjectid=userteacher_branch_semester_subject_mapping.subjectid and userteacher_branch_semester_subject_mapping.userid=1;
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+select test_mst.testname,branch_mst.branchname,group_mst.groupname,semester_mst.semestername, subject_mst.subjectname, user_mst.userid from userteacher_test_mapping,group_student_mapping,test_mst,branch_mst,group_mst,subject_mst,semester_mst,userteacher_branch_semester_subject_mapping,test_branch_semester_subject_group_mapping,user_mst where user_mst.uid=group_student_mapping.studentid and test_branch_semester_subject_group_mapping.groupid=group_student_mapping.groupid and test_branch_semester_subject_group_mapping.testid=userteacher_test_mapping.testid and user_mst.uid=1;
+
+
+   String regex=",";
+    String[] test=checkListData.split(regex);
+    wordList = new ArrayList<string>();
+for(String str : test)
+    {
+        wordList.add(str.trim());
+    }
+
+
+CREATE TABLE USER_BRANCH_SEMESTER_SUBJECT_MAPPING (MAPID integer AUTO_INCREMENT,USERID INTEGER UNIQUE NOT NULL REFERENCES USER_MST(UID) ON DELETE CASCADE,  SUBJECTID INTEGER REFERENCES subject_mst(sid) ON DELETE CASCADE,branchid INTEGER REFERENCES branch_mst(branchid) ON DELETE CASCADE ,semesterid INTEGER REFERENCES semester_mst(semid) ON DELETE CASCADE ,STATUS CHAR(1) DEFAULT 'Y',primary key(MAPID));
+
+select user_mst.userenrollment, user_mst.userid, user_mst.contact, user_mst.email, subject_mst.subjectcode, subject_mst.subjectname, branch_mst.branchname, semester_mst.semestername from user_mst, role_mst, user_role_mapping, subject_mst, branch_mst, semester_mst, subject_branch_semester_mapping where subject_mst.sid=subject_branch_semester_mapping.subjectid and branch_mst.branchid=subject_branch_semester_mapping.branchid and semester_mst.semid=subject_branch_semester_mapping.semesterid and user_mst.uid=user_role_mapping.userid and role_mst.roleid=user_role_mapping.roleid and role_mst.rolename="student";
+
+INSERT INTO user_branch_semester_subject_mapping (userid, subjectid,branchid,semesterid) VALUES(3,4,1,1);
