@@ -7,6 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
+import org.apache.struts2.ServletActionContext;
+
 import com.classmarker.dao.CommonDAO;
 import com.classmarker.dto.LandingDTO;
 import com.classmarker.dto.QuestionDTO;
@@ -29,6 +33,7 @@ public class TakeQuestion {
 		ResultSet rs = null;
 		con = CommonDAO.getConnection();
 
+		HttpSession session=ServletActionContext.getRequest().getSession(false);
 		String testid = (String) session.getAttribute("testid");
 		System.out.println("Test id in question mapping " + testid);
 		
@@ -37,9 +42,9 @@ public class TakeQuestion {
 		rs = pstmt.executeQuery();
 		if(rs.next()) {
 			questions =  new ArrayList<QuestionDTO>();
-		}
+		
 		do {
-			QuestionDTO question = new QuestionDTO(rs.getString("questionname"), rs.getString("choice1"), rs.getString("choice2"), rs.getString("choice3"), rs.getString("choice4")) 
+			QuestionDTO question = new QuestionDTO(rs.getString("questionname"), rs.getString("choice1"), rs.getString("choice2"), rs.getString("choice3"), rs.getString("choice4")); 
 			questions.add(question);
 		}while(rs.next());
 			return "succeess";
