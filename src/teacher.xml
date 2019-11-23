@@ -11,6 +11,11 @@
 	<result name="fail">/login.jsp</result>
 	</action>
 	
+	<action name="teacherresult" class="com.classmarker.teacher.actions.TeacherResult" method="fetch">
+	<result name="success">/teacherresult.jsp</result>
+	<result name="fail">/teacherlanding.jsp</result>
+	</action>
+	
 	<action name="registerteacher" class="com.classmarker.teacher.actions.RegisterTeacher" method="addteacher">
 	<result name="success">/login.jsp</result>
 	<result name="fail">/registerteacher.jsp</result>
