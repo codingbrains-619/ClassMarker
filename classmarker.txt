@@ -104,6 +104,8 @@ insert into student_test_result_mapping(studentid,testid,result) values(1,18,"9"
 
 select test_mst.testname,test_mst.marksperquestion,subject_mst.subjectcode,subject_mst.subjectname,student_test_result_mapping.result from test_mst,student_test_result_mapping,test_branch_semester_subject_group_mapping,subject_mst where test_mst.testid=student_test_result_mapping.testid and test_branch_semester_subject_group_mapping.testid=student_test_result_mapping.testid and test_branch_semester_subject_group_mapping.subjectid=subject_mst.sid and studentid=1;
 
+create table userstudent_question_mapping(mapid integer AUTO_INCREMENT,studentid integer NOT NULL references user_mst(uid) ON DELETE CASCADE,questionid integer NOT NULL REFERENCES question_mst(questionid) ON DELETE CASCADE,status char(1) DEFAULT 'Y',primary key(mapid))
+
 //////////////////////////////////////////////////////////////////////////////////////
 
 select test_mst.testname,branch_mst.branchname,group_mst.groupname,semester_mst.semestername, subject_mst.subjectname, user_mst.userid from userteacher_test_mapping,group_student_mapping,test_mst,branch_mst,group_mst,subject_mst,semester_mst,userteacher_branch_semester_subject_mapping,test_branch_semester_subject_group_mapping,user_mst where user_mst.uid=group_student_mapping.studentid and test_branch_semester_subject_group_mapping.groupid=group_student_mapping.groupid and test_branch_semester_subject_group_mapping.testid=userteacher_test_mapping.testid and user_mst.uid=1;
